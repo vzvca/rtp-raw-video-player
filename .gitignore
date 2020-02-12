@@ -50,3 +50,15 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# gcov
+*.gcov
+*.gcda
+*.gcno
+
+# emacs
+*~
+vpl
+sdl-win
+testdraw2
+
