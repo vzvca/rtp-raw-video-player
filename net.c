@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2020 vzvca
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -28,7 +52,7 @@ char *g_out = NULL;
 int   g_x = 0;
 int   g_y = 0;
 
-// processeur de paquets
+/* packets processors */
 extern void pktprocess( unsigned char *pkt, int pktlen );
 extern void imgprocess( unsigned char *pkt, int pktlen );
 
@@ -36,13 +60,15 @@ extern int initout( char *file, image_t *img );
 extern int initfb( char *fbdev, image_t *img );
 extern int test();
 
-// pointeur vers l'image ou sera stockée la video
+/* this is where th video will be stored */
 extern image_t *pim;
 
 
-// --------------------------------------------------------------------------
-//   Recuperation de l'adresse IP d'une carte reseau
-// --------------------------------------------------------------------------
+/*
+ * --------------------------------------------------------------------------
+ *   Recuperation de l'adresse IP d'une carte reseau
+ * --------------------------------------------------------------------------
+ */
 int get_nic_addr(const char * nic,  struct sockaddr_in *addr)
 {
   struct ifreq ifr;
@@ -65,12 +91,14 @@ int get_nic_addr(const char * nic,  struct sockaddr_in *addr)
 
   *addr = *(struct sockaddr_in *)&ifr.ifr_addr;
 
-  return 0;
+  return r;
 }
 
-// --------------------------------------------------------------------------
-//   Reglage du timeout sur une socket
-// --------------------------------------------------------------------------
+/*
+ * --------------------------------------------------------------------------
+ *   Reglage du timeout sur une socket
+ * --------------------------------------------------------------------------
+ */
 static int set_recv_timeout( int socket, unsigned int timeout_us)
 {
   struct timeval l_timeout;
@@ -83,17 +111,19 @@ static int set_recv_timeout( int socket, unsigned int timeout_us)
   return 0;
 }
 
-// --------------------------------------------------------------------------
-//   Conection a un groupe multicast
-// --------------------------------------------------------------------------
+/*
+ * --------------------------------------------------------------------------
+ *   Conection a un groupe multicast
+ * --------------------------------------------------------------------------
+ */
 static int connect_to_multicast_group( int socket, char *mgroup, char *nic, int mport)
 {
-  int reuse = 1; // value  to bind several sock on a specific port
+  int reuse = 1; /* value to bind several sock on a specific port */
   struct ip_mreq lmreq = {0, 0};
   struct sockaddr_in nic_addr  = {0, 0, 0, 0};
   struct sockaddr_in laddr = {0, 0, 0, 0};
   
-  //! struct that allows to specify to which IP to subscribe
+  /* struct that allows to specify to which IP to subscribe */
   lmreq.imr_multiaddr.s_addr = inet_addr(mgroup);
 
   if (!get_nic_addr( nic, &nic_addr )) {
@@ -105,7 +135,7 @@ static int connect_to_multicast_group( int socket, char *mgroup, char *nic, int 
     return -1;
   }
   
-  //! to be able to bind several IP on port
+  /* to be able to bind several IP on port */
   if ( setsockopt( socket, SOL_SOCKET, SO_REUSEADDR, (int *)&reuse, sizeof(reuse) ) == -1) {
     fprintf( stderr, "connect_to_multicast_group : REUSEADDR not set\n");
     return -1;
@@ -113,7 +143,7 @@ static int connect_to_multicast_group( int socket, char *mgroup, char *nic, int 
 
   printf("connect_to_multicast_group : set REUSEADDR\n");
 
-  //! subscribe to multicast group
+  /* subscribe to multicast group */
   if ( setsockopt(socket, IPPROTO_IP, IP_ADD_MEMBERSHIP, &lmreq, sizeof(struct ip_mreq)) == -1) {
     fprintf( stderr, "connect_to_multicast_group : error subscribing to multicast group %s", mgroup );
     return -1;
@@ -123,9 +153,9 @@ static int connect_to_multicast_group( int socket, char *mgroup, char *nic, int 
 
   laddr.sin_family = AF_INET;
   laddr.sin_port = htons(mport);
-  laddr.sin_addr.s_addr = inet_addr(mgroup); //htonl(INADDR_ANY);
+  laddr.sin_addr.s_addr = /*inet_addr(mgroup);*/ htonl(INADDR_ANY);
 
-  //! bind socket to the right port to receive data
+  /* bind socket to the right port to receive data */
   if ( bind(socket, (struct sockaddr *)&laddr, sizeof(struct sockaddr_in)) == -1) {
     fprintf( stderr, "connect_to_multicast_group : error binding\n");
     return -1;
@@ -137,10 +167,12 @@ static int connect_to_multicast_group( int socket, char *mgroup, char *nic, int 
 }
 
 
-// --------------------------------------------------------------------------
-//   Boucle de traitement
-//   lecture des paquet et appel de la fonction callback
-// --------------------------------------------------------------------------
+/*
+ * --------------------------------------------------------------------------
+ *   Boucle de traitement
+ *   lecture des paquet et appel de la fonction callback
+ * --------------------------------------------------------------------------
+ */
 void netloop( pktproc_t pfun )
 {
   struct sockaddr_in addr;
@@ -170,9 +202,11 @@ void netloop( pktproc_t pfun )
 }
 
 
-// --------------------------------------------------------------------------
-//   Usage
-// --------------------------------------------------------------------------
+/*
+ * --------------------------------------------------------------------------
+ *   Usage
+ * --------------------------------------------------------------------------
+ */
 void usage( int argc, char *argv[], int optind )
 {
   char *what = (optind > 0) ? "error" : "usage";
@@ -188,7 +222,7 @@ void usage( int argc, char *argv[], int optind )
   fprintf( stderr, "\t-x\t\tSets the x offset of the image when rendering to framebuffer.\n");
   fprintf( stderr, "\t-y\t\tSets the y offset of the image when rendering to framebuffer.\n");
   fprintf( stderr, "Options -o -w -h must be used together and are incompatible with -d.");
-  // erreur seulement si le parsing a foire
+  /* exit with error only if option parsng failed */
   exit(optind > 0);
 }
 

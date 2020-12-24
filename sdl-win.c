@@ -22,7 +22,13 @@
  * SOFTWARE.
  */
 
+#include <stdlib.h>
+#include <unistd.h>
 #include <stdio.h>
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <sys/ioctl.h>
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
@@ -38,9 +44,10 @@ ThreadFunc(void *data)
   SDL_Window *win = NULL;
   SDL_Renderer *renderer = NULL;
   SDL_Texture *img = NULL;
-  int w, h; // texture width & height
-	
-	
+  int w = WIDTH, h = HEIGHT; // texture width & height
+  char *pixels = NULL;
+  int fbfd;
+  
   // create the window and renderer
   // note that the renderer is accelerated
   puts("create window");
@@ -48,14 +55,35 @@ ThreadFunc(void *data)
 
   puts("create renderer");
   renderer = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
-	
+
+  puts("create texture");
+  img = SDL_CreateTexture(renderer,
+			  SDL_PIXELFORMAT_ARGB32, SDL_TEXTUREACCESS_STREAMING,
+			  w, h);
+
+  puts("mmap video source");
+  fbfd = open( "toto.img", O_RDWR );
+  if (fbfd == -1) {
+    perror("Error: cannot open output file");
+    exit(1);
+  }
+  printf("The output file was opened successfully.\n");
+  /* Map the device to memory */
+  pixels = (char *)mmap(0, w*h*4, PROT_READ, MAP_SHARED, fbfd, 0);
+  if (*(int*)pixels == -1) {
+    perror("Error: failed to map output file to memory");
+    exit(4);
+  }
+  printf("The output file was mapped to memory successfully.\n");
+  
+  
   // load our image
   //  img = IMG_LoadTexture(renderer, IMG_PATH);
   //  SDL_QueryTexture(img, NULL, NULL, &w, &h); // get the width and height of the texture
   // put the location where we want the texture to be drawn into a rectangle
   // I'm also scaling the texture 2x simply by setting the width and height
   //  SDL_Rect texr; texr.x = WIDTH/2; texr.y = HEIGHT/2; texr.w = w*2; texr.h = h*2; 
-
+SDL_Rect texr; texr.x = 0; texr.y = 0; texr.w = WIDTH; texr.h = HEIGHT; 
   puts("entering main loop");
   
   
@@ -74,8 +102,12 @@ ThreadFunc(void *data)
 		
     // clear the screen
     SDL_RenderClear(renderer);
+
+    // update video frame
+    SDL_UpdateTexture( img, NULL, pixels, w*4 );
+    
     // copy the texture to the rendering context
-    //    SDL_RenderCopy(renderer, img, NULL, &texr);
+    SDL_RenderCopy(renderer, img, NULL, NULL);
     // flip the backbuffer
     // this means that everything that we prepared behind the screens is actually shown
     SDL_RenderPresent(renderer);

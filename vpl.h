@@ -27,20 +27,24 @@
 
 #include <stdint.h>
 
-//--------------------------------------------------------------------------
-//  Definition d'une image
-//  On part du principe que les pixels occupent 4 octets
-//  ce qui est le cas sur les cibles matérielles que nous utilisont
-//--------------------------------------------------------------------------
+/*
+ * --------------------------------------------------------------------------
+ *  Definition d'une image
+ *  On part du principe que les pixels occupent 4 octets
+ *  ce qui est le cas sur les cibles matérielles que nous utilisont
+ * --------------------------------------------------------------------------
+ */
 struct image_s {
   uint32_t w, h, stride;
   uint32_t  *pixels;
 };
 typedef struct image_s image_t;
 
-//--------------------------------------------------------------------------
-//  Header d'une scanline du payload RAW
-//--------------------------------------------------------------------------
+/*
+ * --------------------------------------------------------------------------
+ *  Header d'une scanline du payload RAW
+ * --------------------------------------------------------------------------
+ */
 struct rawline_s {
   uint16_t length;
   uint16_t lineno;
@@ -48,39 +52,43 @@ struct rawline_s {
 };
 typedef struct rawline_s rawline_t;
 
-//--------------------------------------------------------------------------
-//  Header RTP complété avec le header du payload RAW
-//--------------------------------------------------------------------------
+/*
+ * --------------------------------------------------------------------------
+ *  RTP header with RAW RTP payload header appended 
+ * --------------------------------------------------------------------------
+ */
 struct rtphead_s {
-  // RTP header
-  // octet 1
+  /* RTP header */
+  /* byte 1     */
   uint8_t cc : 4;
   uint8_t x  : 1;
   uint8_t p  : 1;
   uint8_t v  : 2;
-  // octet 2
+  /* byte 2     */
   uint8_t pt : 7;
   uint8_t m  : 1;
-  // octet 3,4
+  /* byte 3,4   */
   uint16_t seq;
-  // octet 5-8
+  /* byte 5-8   */
   uint32_t timestamp;
-  // octet 9-12
+  /* byte 9-12  */
   uint32_t ssrc;
 
-  // RAW payload header
-  // le tableau lines peut contenir plusieurs éléments
+  /* RAW payload header */
+  /* lines array might hold more that one line */
   uint16_t extseq;
   rawline_t lines[1];
 };
 typedef struct rtphead_s rtphead_t;
 
 
-//--------------------------------------------------------------------------
-//  Function de processing d'un paquet UDP
-//  1er param = données du paquet
-//  2nd param = taille du paquet
-//--------------------------------------------------------------------------
+/*
+ * --------------------------------------------------------------------------
+ *  Function de processing d'un paquet UDP
+ *  1er param = données du paquet
+ *  2nd param = taille du paquet
+ * --------------------------------------------------------------------------
+ */
 typedef void (*pktproc_t)( unsigned char *, int );
 
 
