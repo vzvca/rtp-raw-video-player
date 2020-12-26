@@ -49,7 +49,7 @@ extern int g_width, g_height;
 
 /*
  * --------------------------------------------------------------------------
- *   Init du l'ecriture dans un fichier
+ *   Memory mapped image file
  * --------------------------------------------------------------------------
  */
 int initout( char *file, image_t *img )
@@ -94,7 +94,7 @@ int initout( char *file, image_t *img )
 
 /*
  * --------------------------------------------------------------------------
- *   Init du framebuffer
+ *   Framebuffer rendering
  * --------------------------------------------------------------------------
  */
 int initfb( char *fbdev, image_t *img )

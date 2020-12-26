@@ -143,9 +143,9 @@ void usage( int argc, char *argv[], int optind )
   exit(optind > 0);
 }
 
-// --------------------------------------------------------------------------
-//   Programme principal
-// --------------------------------------------------------------------------
+/* --------------------------------------------------------------------------
+ *   Main program
+ * --------------------------------------------------------------------------*/
 int main (int argc, char *argv[])
 {
   SDL_Thread *thread;
@@ -164,7 +164,6 @@ int main (int argc, char *argv[])
       usage(argc, argv, optind);
     }
   }
-  
   
   // Initialize SDL.
   puts("init sdl");

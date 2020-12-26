@@ -66,7 +66,7 @@ extern image_t *pim;
 
 /*
  * --------------------------------------------------------------------------
- *   Recuperation de l'adresse IP d'une carte reseau
+ *   Get IP address of network interface
  * --------------------------------------------------------------------------
  */
 int get_nic_addr(const char * nic,  struct sockaddr_in *addr)
@@ -96,7 +96,7 @@ int get_nic_addr(const char * nic,  struct sockaddr_in *addr)
 
 /*
  * --------------------------------------------------------------------------
- *   Reglage du timeout sur une socket
+ *   Tune socket timeout
  * --------------------------------------------------------------------------
  */
 static int set_recv_timeout( int socket, unsigned int timeout_us)
@@ -113,7 +113,7 @@ static int set_recv_timeout( int socket, unsigned int timeout_us)
 
 /*
  * --------------------------------------------------------------------------
- *   Conection a un groupe multicast
+ *   Connect to multicast group
  * --------------------------------------------------------------------------
  */
 static int connect_to_multicast_group( int socket, char *mgroup, char *nic, int mport)
@@ -169,8 +169,7 @@ static int connect_to_multicast_group( int socket, char *mgroup, char *nic, int 
 
 /*
  * --------------------------------------------------------------------------
- *   Boucle de traitement
- *   lecture des paquet et appel de la fonction callback
+ *   Loop over incoming packets sending them to pfun for handling
  * --------------------------------------------------------------------------
  */
 void netloop( pktproc_t pfun )
@@ -226,9 +225,9 @@ void usage( int argc, char *argv[], int optind )
   exit(optind > 0);
 }
 
-// --------------------------------------------------------------------------
-//   Programme principal
-// --------------------------------------------------------------------------
+/* --------------------------------------------------------------------------
+ *   Programme principal
+ * --------------------------------------------------------------------------*/
 int main( int argc, char *argv[] )
 {
   int opt;
@@ -250,7 +249,7 @@ int main( int argc, char *argv[] )
     }
   }
 
-  // verification de validite
+  /* Check arguments validity */
   if ( g_out != NULL && (g_width < 0 || g_height < 0))  {
     fprintf( stderr, "options '-w' and '-h' are mandatory when '-o' is used.\n");
     exit(1);
@@ -264,7 +263,7 @@ int main( int argc, char *argv[] )
     exit(1);
   }
 
-  // Creation de l'image utilisée pour le rendu
+  /* Create image for rendering */
   if ( g_out == NULL ) {
     int fbfd = initfb( g_fbdev, pim );
   }
@@ -272,7 +271,7 @@ int main( int argc, char *argv[] )
     int imfd = initout( g_out, pim );
   }
   
-  // abonnement au flux avec ecriture dans l'image de sortie
+  /* rendering */
   netloop(imgprocess);
 }
 

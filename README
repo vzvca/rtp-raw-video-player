@@ -1,7 +1,0 @@
-Lorsqu'un fichier est utilisé en sortie plutôt que le framebuffer celui-ci est mappé en mémoire
-après avoir été ajusté à la taille width x height x 4. On compte 4 octets par pixels (RGBA).
-L'idée est que ce fichier réside dans un ramdisk et qu'un (ou plusieurs) autre(s) programme(s)
-l'utilise(nt) via mmap en lecture pour en afficher le contenu.
-
-De cette manière on sépare l'acquisition du flux vidéo de son utilisation. Ce qui permet
-de garder ce programme très simple et sans dépendances externes.

@@ -1,4 +1,4 @@
-OBJS=net.o vpl.o testing.o drfb0.o
+OBJS=net.o vpl.o drfb0.o
 
 CFLAGS=-O3 -fomit-frame-pointer
 
