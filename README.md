@@ -71,9 +71,16 @@ Here is a screenshot of `sdl-win` output :
 
 ### Display video in the framebuffer
 
+Open a console with `<Ctrl-Alt-F4>` and start the player like this :
+
 ~~~~
-sudo ./vpl
+sudo ./vpl -i lo
 ~~~~
+
+Here is a screenshot of the screen :
+
+![alt text](doc/screenshot-2.png)
+
 
 ## Reference
 
