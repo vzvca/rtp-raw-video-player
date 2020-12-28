@@ -220,7 +220,7 @@ void usage( int argc, char *argv[], int optind )
   fprintf( stderr, "\t-h\t\tSets the height of the image.\n");
   fprintf( stderr, "\t-x\t\tSets the x offset of the image when rendering to framebuffer.\n");
   fprintf( stderr, "\t-y\t\tSets the y offset of the image when rendering to framebuffer.\n");
-  fprintf( stderr, "Options -o -w -h must be used together and are incompatible with -d.");
+  fprintf( stderr, "Options -o -w -h must be used together and are incompatible with -d.\n");
   /* exit with error only if option parsng failed */
   exit(optind > 0);
 }

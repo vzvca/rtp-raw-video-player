@@ -50,6 +50,8 @@ Remember to add the famous 'multicast route' on the interface used for streaming
 sudo /sbin/route add -net 224.0.0.0 netmask 240.0.0.0 dev lo
 ~~~~
 
+### Display video in a window
+
 Starts the video decoder in a second terminal
 
 ~~~~
@@ -60,6 +62,53 @@ In a third terminal, starts the video display program
 
 ~~~~
 ./sdl-win -i /tmp/video.img -w 720 -h 576
+~~~~
+
+Here is a screenshot of `sdl-win` output :
+
+![alt text](doc/screenshot-1.png)
+
+
+### Display video in the framebuffer
+
+~~~~
+sudo ./vpl
+~~~~
+
+## Reference
+
+For the video player
+
+~~~~
+localadmin@buster:~/rtp-raw-video-player$ ./vpl -?
+./vpl usage :
+./vpl [-h] [-i nic] [-m group] [-p port] [-d fbdev] [-o file] [-w width] [-h height]
+	-?		Prints this message.
+	-i		Sets network interface to bind to (default eth0.10).
+	-g		Sets multicast group to join (default 239.192.77.10).
+	-p		Sets port to use (default 5004).
+	-d		Sets the framebuffer device (default /dev/fb0).
+	-o		Sets the image output file.
+	-w		Sets the width of the image.
+	-h		Sets the height of the image.
+	-x		Sets the x offset of the image when rendering to framebuffer.
+	-y		Sets the y offset of the image when rendering to framebuffer.
+Options -o -w -h must be used together and are incompatible with -d.
+~~~~
+
+For the SDL display program
+
+~~~~
+localadmin@buster:~/rtp-raw-video-player$ ./sdl-win -?
+./sdl-win usage :
+./sdl-win [-?] -i file [-f fps] [-x x] [-y y] [-w width] [-h height]
+	-?		Prints this message.
+	-i		Sets input video frame file.
+	-f		Sets the video framerate (default 10).
+	-w		Sets the width of the image (default 720).
+	-h		Sets the height of the image (default 576).
+	-x		Sets the x position of the window (default 100).
+	-y		Sets the y position of the window (default 100).
 ~~~~
 
 
