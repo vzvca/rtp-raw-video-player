@@ -4,9 +4,9 @@ Plays RTP stream with raw video payload.
 
 ## Introduction
 
-RAW video can be sent over RTP, the way the video is packed in RTP frames is described in RFC. Video is not encoded and images are streamed as YUV 4:2:0 frames. Each RTP frame contains portions of image scanline. This RTP video payload is rarely used because it consumes a lot of network bandwidth compared to other payloads like h264.
+RAW video can be sent over RTP, the way the video is packed in RTP frames is described in RFC. Video is not encoded and images are streamed as YUV 4:2:0 frames. Each RTP packet contains portions of image scanlines. This RTP video payload is rarely used because it consumes a lot of network bandwidth compared to other payloads like h264.
 
-It makes t very easy to write a very simple video player with a few lines of C without any external dependencies. This is the purpose of this project.
+It makes it very easy to write a very simple video player with a few lines of C without any external dependencies. This is the purpose of this project.
 
 The player will output RGB frames either diretly to `/dev/fb0` or to a file which is memory mapped. Another program can mmap the same file and render the video in a window, take snapshots, convert the video to another format ... A demo program displaying the video in a window is provided, it uses SDL2.
 
@@ -82,7 +82,7 @@ Here is a screenshot of the screen :
 ![alt text](doc/screenshot-2.png)
 
 
-## Reference
+## Programs reference
 
 For the video player
 
@@ -118,4 +118,9 @@ localadmin@buster:~/rtp-raw-video-player$ ./sdl-win -?
 	-y		Sets the y position of the window (default 100).
 ~~~~
 
+## External links
+
+[RFC 4175](https://tools.ietf.org/html/rfc4175)
+
+[RFC 4421](https://tools.ietf.org/html/rfc4421)
 
